@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000/';
+const BASE_URL = 'http://localhost:3000/'
 
 async function login(code: string) {
   try {
@@ -35,12 +35,10 @@ async function refreshAuth(refreshToken: string) {
       throw new Error(res.statusText)
     }
     const json = await res.json()
-    // window.history.pushState({}, '', "/")
-    // console.log(json)
     return json
   } catch (error) {
     console.error(error)
-    // window.location.href = '/'
+    
   }
 }
 
