@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* layout tool */
+/* html * {
+  border: 1px solid red;
+} */
+
+html {
+  background: #121212;
+}
+
+* {
+  text: #FFFFFF;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
-import useAuth from "./useAuth"
+import useAuth from "../hooks/useAuth"
 import TrackSearchResult from "./components/TrackSearchResult"
+import SearchBar from "./components/SearchBar"
 import * as spotifyService from "./../services/spotifyService"
 
 interface DashboardProps {
@@ -37,8 +38,8 @@ export default function Dashboard(props: DashboardProps) {
       timer = setTimeout(async () => {
         const spotifyData = await spotifyService.search(search, accessToken)
         setSearchResults(spotifyData)
-        console.log(spotifyData)
-      }, 750)
+        // console.log(spotifyData)
+      }, 150)
     }
     fetchDataWithDelay()
     return () => {
@@ -53,26 +54,20 @@ export default function Dashboard(props: DashboardProps) {
       className="d-flex flex-column py-2"
       style={{ height: "100vh" }}
     >
-      <form
-        onSubmit={handleSubmit}
-      >
-        <input
-          onChange={handleChange}
-          value={search}
-          required
-          type="search"
-          placeholder="Search Songs/Artists"
-        />
-      </form>
+      <SearchBar 
+        search={search} 
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+      />
       <div
-        className="flex-grow-1 my-2"
+        className="flex-grow-1 flex-col"
         style={{ overflowY: "auto" }}
       >
         {searchResults.map(track => (
           <TrackSearchResult track={track} key={track.uri} />
         ))}
       </div>
-      <div>bottom</div>
+      <div className="fixed bottom-0">Player</div>
     </div>
   )
 }
