@@ -2,10 +2,17 @@ import React, { useState, useEffect } from "react"
 import useAuth from "../hooks/useAuth"
 import TrackSearchResult from "./components/TrackSearchResult"
 import SearchBar from "./components/SearchBar"
+import Player from "./components/Player"
 import * as spotifyService from "./../services/spotifyService"
 
 interface DashboardProps {
   code: string
+}
+interface Track {
+  artist: string;
+  title: string;
+  uri: string;
+  albumUrl: string;
 }
 
 export default function Dashboard(props: DashboardProps) {
@@ -13,6 +20,13 @@ export default function Dashboard(props: DashboardProps) {
   const accessToken = useAuth(code)
   const [search, setSearch] = useState("")
   const [searchResults, setSearchResults] = useState<{ artist: string; title: string; uri: string; albumUrl: string }[]>([])
+  const [playingTrack, setPlayingTrack] = useState<Track | null>(null)
+
+  async function chooseTrack(track: Track) {
+    setPlayingTrack(track)
+    setSearch('')
+    return Promise.resolve()
+  }
 
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(evt.target.value)
@@ -64,10 +78,23 @@ export default function Dashboard(props: DashboardProps) {
         style={{ overflowY: "auto" }}
       >
         {searchResults.map(track => (
-          <TrackSearchResult track={track} key={track.uri} />
+          <TrackSearchResult 
+            track={track} 
+            key={track.uri} 
+            chooseTrack={chooseTrack}
+          />
         ))}
       </div>
-      <div className="fixed bottom-0">Player</div>
+      <div className="fixed bottom-0">
+        {accessToken?
+          <Player 
+            accessToken={accessToken}
+            trackUri={playingTrack?.uri || ''}
+          />
+          :
+          null
+        }
+      </div>
     </div>
   )
 }
