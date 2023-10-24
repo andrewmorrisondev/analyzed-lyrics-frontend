@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import * as authService from "./../services/authService"
+import * as authService from "../services/authService"
 
 export default function useAuth(code: string) {
 
@@ -7,14 +7,13 @@ export default function useAuth(code: string) {
   const [refreshToken, setRefreshToken] = useState()
   const [expiresIn, setExpiresIn] = useState()
 
-  let cat = 0
+  let bandaid = 0
   useEffect(() => {
-    cat++
-    console.log(cat, code)
-    if (code && cat > 1) {
+    bandaid++
+    if (code && bandaid > 1) {
       const fetchAuthInfo = async (code: string): Promise<void> => {
         try {
-          cat++
+          bandaid++
           const authData = await authService.login(code)
 
           if (authData && authData.accessToken) {
@@ -29,7 +28,7 @@ export default function useAuth(code: string) {
       }
       fetchAuthInfo(code)
     }
-  }, [cat, code])
+  }, [bandaid, code])
 
   useEffect(() => {
     if (!refreshToken || !expiresIn) return
