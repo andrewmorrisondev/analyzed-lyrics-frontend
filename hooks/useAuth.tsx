@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import * as authService from "./../services/authService"
+import * as authService from "../services/authService"
 
 export default function useAuth(code: string) {
 
@@ -7,23 +7,20 @@ export default function useAuth(code: string) {
   const [refreshToken, setRefreshToken] = useState()
   const [expiresIn, setExpiresIn] = useState()
 
-  // console.log('useAuth');
-  let cat = 0
+  let bandaid = 0
   useEffect(() => {
-    cat++
-    console.log(cat, code)
-    if (code && cat > 1) {
-      const fetchAuthInfo = async (code: string) : Promise<void> => {
-        console.log()
+    bandaid++
+    if (code && bandaid > 1) {
+      const fetchAuthInfo = async (code: string): Promise<void> => {
         try {
-          cat++
+          bandaid++
           const authData = await authService.login(code)
-          
+
           if (authData && authData.accessToken) {
             setAccessToken(authData.accessToken)
             setRefreshToken(authData.refreshToken)
             setExpiresIn(authData.expiresIn)
-            // console.log('accessToken: ', authData.accessToken, 'refreshToken: ', authData.refreshToken, 'expiresIn: ', authData.expiresIn)
+
           }
         } catch (err) {
           console.log(err)
@@ -31,12 +28,12 @@ export default function useAuth(code: string) {
       }
       fetchAuthInfo(code)
     }
-  }, [code])
+  }, [bandaid, code])
 
   useEffect(() => {
     if (!refreshToken || !expiresIn) return
     const interval = setInterval(() => {
-      const fetchRefreshAuth = async (refreshToken: string) : Promise<void> => {
+      const fetchRefreshAuth = async (refreshToken: string): Promise<void> => {
         try {
           const refreshTokenData = await authService.refreshAuth(refreshToken)
           setAccessToken(refreshTokenData.accessToken)
