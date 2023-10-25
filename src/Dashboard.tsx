@@ -4,6 +4,7 @@ import TrackSearchResult from "./components/TrackSearchResult"
 import SearchBar from "./components/SearchBar"
 import Player from "./components/Player"
 import * as spotifyService from "./../services/spotifyService"
+import * as lyricsService from "./../services/lyricsService"
 
 interface DashboardProps {
   code: string
@@ -15,17 +16,30 @@ interface Track {
   albumUrl: string;
 }
 
+interface Lyrics {
+  error: boolean;
+  syncType: string;
+  lines: [];
+}
+
+interface Line {
+  words: string;
+}
+
 export default function Dashboard(props: DashboardProps) {
   const { code } = props
   const accessToken = useAuth(code)
   const [search, setSearch] = useState("")
   const [searchResults, setSearchResults] = useState<{ artist: string; title: string; uri: string; albumUrl: string }[]>([])
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null)
+  const [lyrics, setLyrics] = useState<Lyrics | null>(null)
+  const [lyricError, setLyricError] = useState("")
+
+
 
   async function chooseTrack(track: Track) {
     setPlayingTrack(track)
     setSearch('')
-    return Promise.resolve()
   }
 
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +49,21 @@ export default function Dashboard(props: DashboardProps) {
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault()
   }
+
+  useEffect(()=>{
+    if (!playingTrack) return
+    const uri = playingTrack.uri.split(':')[2]
+    const fetchLyrics = async () => {
+      const lyricData = await lyricsService.show(uri)
+      if (lyricData.error === true) {
+        setLyrics(null)
+        setLyricError(lyricData.message)
+      } else {
+        setLyrics(lyricData)
+      }
+    }
+    fetchLyrics()
+  }, [playingTrack])
 
   useEffect(() => {
     if (!search) {
@@ -52,7 +81,6 @@ export default function Dashboard(props: DashboardProps) {
       timer = setTimeout(async () => {
         const spotifyData = await spotifyService.search(search, accessToken)
         setSearchResults(spotifyData)
-        // console.log(spotifyData)
       }, 150)
     }
     fetchDataWithDelay()
@@ -77,14 +105,21 @@ export default function Dashboard(props: DashboardProps) {
         className="flex-grow-1 flex-col"
         style={{ overflowY: "auto" }}
       >
-        {searchResults.map(track => (
-          <TrackSearchResult 
-            track={track} 
-            key={track.uri} 
-            chooseTrack={chooseTrack}
-          />
+        {searchResults.map((track) => (
+          <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
         ))}
+      {lyrics !== null ?
+        <div className="whitespace-pre">
+          {lyrics.lines.map((line: Line, index) => (
+            <div style={{color: "#FFFFFF"}} key={index}>{line.words}</div>
+          ))}
+        </div>
+      :
+      <div style={{color: "#FFFFFF"}}>
+        {lyricError}
       </div>
+      }
+    </div>
       <div className="fixed bottom-0">
         {accessToken?
           <Player 

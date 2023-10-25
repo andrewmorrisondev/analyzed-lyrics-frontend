@@ -12,10 +12,10 @@ interface TrackSearchResultProps {
 
 
 const TrackSearchResult = (props: TrackSearchResultProps) => {
-  const { track } = props
+  const { track, chooseTrack } = props
 
   function handlePlay() {
-    props.chooseTrack(track)
+    chooseTrack(track)
   }
   
 
