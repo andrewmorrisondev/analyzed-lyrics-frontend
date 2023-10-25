@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth"
 import TrackSearchResult from "./components/TrackSearchResult"
 import SearchBar from "./components/SearchBar"
 import Player from "./components/Player"
+import Lyrics from "./components/Lyrics"
 import * as spotifyService from "./../services/spotifyService"
 import * as lyricsService from "./../services/lyricsService"
 
@@ -19,10 +20,10 @@ interface Track {
 interface Lyrics {
   error: boolean;
   syncType: string;
-  lines: [];
+  lines: Line[];
 }
 
-interface Line {
+export interface Line {
   words: string;
 }
 
@@ -108,17 +109,10 @@ export default function Dashboard(props: DashboardProps) {
         {searchResults.map((track) => (
           <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
         ))}
-      {lyrics !== null ?
-        <div className="whitespace-pre">
-          {lyrics.lines.map((line: Line, index) => (
-            <div style={{color: "#FFFFFF"}} key={index}>{line.words}</div>
-          ))}
-        </div>
-      :
-      <div style={{color: "#FFFFFF"}}>
-        {lyricError}
-      </div>
-      }
+      <Lyrics 
+        lyrics={lyrics}
+        lyricError={lyricError}
+      />
     </div>
       <div className="fixed bottom-0">
         {accessToken?
