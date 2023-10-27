@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth"
 import TrackSearchResult from "./components/TrackSearchResult"
 import SearchBar from "./components/SearchBar"
 import Player from "./components/Player"
+import Lyrics from "./components/Lyrics"
 import * as spotifyService from "./../services/spotifyService"
 import * as lyricsService from "./../services/lyricsService"
 
@@ -19,10 +20,11 @@ interface Track {
 interface Lyrics {
   error: boolean;
   syncType: string;
-  lines: [];
+  lines: Line[];
 }
 
-interface Line {
+export interface Line {
+  startTimeMs: string;
   words: string;
 }
 
@@ -34,8 +36,9 @@ export default function Dashboard(props: DashboardProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null)
   const [lyrics, setLyrics] = useState<Lyrics | null>(null)
   const [lyricError, setLyricError] = useState("")
-
-
+  const [currentTime, setCurrentTime] = useState(0)
+  const [lyricsStartTimes, setLyricsStartTimes] = useState<number[]>([])
+  const [isPlaying, setIsPlaying] = useState(false)
 
   async function chooseTrack(track: Track) {
     setPlayingTrack(track)
@@ -108,23 +111,24 @@ export default function Dashboard(props: DashboardProps) {
         {searchResults.map((track) => (
           <TrackSearchResult track={track} key={track.uri} chooseTrack={chooseTrack} />
         ))}
-      {lyrics !== null ?
-        <div className="whitespace-pre">
-          {lyrics.lines.map((line: Line, index) => (
-            <div style={{color: "#FFFFFF"}} key={index}>{line.words}</div>
-          ))}
-        </div>
-      :
-      <div style={{color: "#FFFFFF"}}>
-        {lyricError}
-      </div>
-      }
+      <Lyrics 
+        lyrics={lyrics}
+        lyricError={lyricError}
+        lyricsStartTimes={lyricsStartTimes}
+        setLyricsStartTimes={setLyricsStartTimes}
+        isPlaying={isPlaying}
+        currentTime={currentTime}
+      />
     </div>
       <div className="fixed bottom-0">
         {accessToken?
           <Player 
             accessToken={accessToken}
             trackUri={playingTrack?.uri || ''}
+            currentTime={currentTime}
+            setCurrentTime={setCurrentTime}
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
           />
           :
           null
