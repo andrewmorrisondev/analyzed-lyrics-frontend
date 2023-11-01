@@ -36,10 +36,12 @@ export default function Dashboard(props: DashboardProps) {
   const [playingTrack, setPlayingTrack] = useState<Track | null>(null)
   const [lyrics, setLyrics] = useState<Lyrics | null>(null)
   const [lyricError, setLyricError] = useState("")
-  const [currentTime, setCurrentTime] = useState(0)
+  const [startTime, setStartTime] = useState(0)
   const [lyricsStartTimes, setLyricsStartTimes] = useState<number[]>([])
   const [isPlaying, setIsPlaying] = useState(false)
-
+  const [pausedTime, setPausedTime] = useState(0)
+  const [totalElapsedTime, setTotalElapsedTime] = useState(0)
+  console.log(totalElapsedTime)
   async function chooseTrack(track: Track) {
     setPlayingTrack(track)
     setSearch('')
@@ -117,7 +119,8 @@ export default function Dashboard(props: DashboardProps) {
         lyricsStartTimes={lyricsStartTimes}
         setLyricsStartTimes={setLyricsStartTimes}
         isPlaying={isPlaying}
-        currentTime={currentTime}
+        totalElapsedTime={totalElapsedTime}
+        trackUri={playingTrack?.uri || ''}
       />
     </div>
       <div className="fixed bottom-0">
@@ -125,11 +128,16 @@ export default function Dashboard(props: DashboardProps) {
           <Player 
             accessToken={accessToken}
             trackUri={playingTrack?.uri || ''}
-            currentTime={currentTime}
-            setCurrentTime={setCurrentTime}
+            setStartTime={setStartTime}
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
-          />
+            setPausedTime={setPausedTime}
+            startTime={startTime}
+            pausedTime={pausedTime}
+            totalElapsedTime={totalElapsedTime}
+            setTotalElapsedTime={setTotalElapsedTime}
+
+            />
           :
           null
         }
